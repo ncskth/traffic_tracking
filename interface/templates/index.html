@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Traffic Recorder Dashboard</title>
+</head>
+<body>
+    <h1>Telemetry</h1>
+    <p id="battery_voltage"> </p>
+    <script>
+    function updateBatteryVoltage() {
+        fetch('/telem/battery_voltage')
+        .then(response => response.text())
+        .then(data => {
+            document.getElementById('battery_voltage').innerText = `battery voltage: ${data}`;
+        })
+    }
+    setInterval(updateBatteryVoltage, 1000);
+    </script>
+
+    <p id="disk_usage"> </p>
+    <script>
+    function updateBatteryVoltage() {
+        fetch('/telem/disk_usage')
+        .then(response => response.text())
+        .then(data => {
+            document.getElementById('disk_usage').innerText = `disk space used: ${data}`;
+        })
+    }
+    setInterval(updateBatteryVoltage, 1000);
+    </script>
+
+    <h1>Stream control</h1>
+    <p>Currently recording: {{ data.is_recording }}</p>
+
+    {% if data.is_recording == False %}
+    <button id="on_button" onclick="fetch('/control/start_recording')"> start </button>
+    {% elif data.is_recording == True %}
+    <button id="off_button" onclick="fetch('/control/stop_recording')"> Stop </button>
+    {% endif %}
+
+    <h1>Snapshot</h1>
+    <img src="/telem/event_snapshot.jpg">
+    <img src="/telem/video_snapshot.jpg">
+</body>
+</html>
