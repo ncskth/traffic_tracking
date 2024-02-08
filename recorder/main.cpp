@@ -120,7 +120,10 @@ void main_process(std::string output_dir, bool *ready, bool record) {
     cam.start_recording(output_dir + "events.raw");
     while (terminate == false) {
         using namespace std::chrono_literals;
-        std::this_thread::sleep_for(100ms);
+        std::this_thread::sleep_for(1000ms);
+        if (not record) {
+            terminate = true;
+        }
     }
     int status;
     waitpid(ffmpeg_pid, &status, 0);
@@ -129,15 +132,19 @@ void main_process(std::string output_dir, bool *ready, bool record) {
 void child_process(std::string(output_dir), bool *ready, bool record) {
     // take a snapshot
     std::cout << "taking video snapshot" << std::endl;
-    std::string snapshot_cmd = "ffmpeg -nostdin -y -f v4l2 -s 1920x1200 -i /dev/video2 -ss 0:0:1 -frames:v 1 -loglevel quiet /tmp/video_snapshot.jpg";
+    std::string snapshot_cmd = "ffmpeg -nostdin -y -f v4l2 -s 1920x1200 -i /dev/video0 -ss 0:0:1 -frames:v 1 -loglevel quiet /tmp/video_snapshot.jpg";
     system(snapshot_cmd.c_str());
+
+    if (not record) {
+        return;
+    }
 
     std::cout << "waiting for event camera" << std::endl;
 
-    while (not *ready) {}
+    while (not *ready && not terminate) {}
 
     std::cout << "starting video recording" << std::endl;
-    std::string record_cmd = "ffmpeg -f v4l2 -framerate 90 -video_size 1920x1200 -input_format mjpeg -i /dev/video2 -c:v copy -y -nostdin -loglevel quiet " + output_dir + "/video.mp4";
+    std::string record_cmd = "ffmpeg -f v4l2 -framerate 90 -video_size 1920x1200 -input_format mjpeg -i /dev/video0 -c:v copy -y -nostdin -loglevel quiet " + output_dir + "/video.mp4";
     system(record_cmd.c_str());
     return;
 }
