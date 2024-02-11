@@ -56,7 +56,7 @@ class Dashboard:
 
     def get_disk_usage(self):
         print("get disk usage")
-        disk_usage = psutil.disk_usage(".")
+        disk_usage = psutil.disk_usage(config.RECORD_DIR)
         free_space_gb = disk_usage.free / (1024 ** 3)  # Convert bytes to gigabytes
         return f"{free_space_gb:.2f}"
 
