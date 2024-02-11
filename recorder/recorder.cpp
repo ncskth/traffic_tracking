@@ -173,6 +173,7 @@ int event_camera_thread(std::string output_dir) {
     std::string events_output_path = output_dir + "/events.raw";
 
     cam = Metavision::Camera::from_first_available();
+    std::cout << cam.geometry().width() << cam.geometry().height() << std::endl;
     cam.start();
     cam.cd().add_callback(event_cb);
     cam.start_recording(events_output_path);
