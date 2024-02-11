@@ -3,11 +3,12 @@ import random
 import psutil
 import subprocess
 
+import config
+
 class Dashboard:
     def __init__(self):
         self.app = Flask(__name__)
-        self.is_recording = False
-        self.process = subprocess.Popen(['../recorder/build/main', '/tmp/', 'false'])
+        self.process = subprocess.Popen(['ls'])
         self.register_routes()
 
     def register_routes(self):
@@ -16,6 +17,7 @@ class Dashboard:
         self.app.route("/telem/video_snapshot.jpg")(self.get_video_snapshot)
         self.app.route("/telem/battery_voltage")(self.get_battery_voltage)
         self.app.route("/telem/disk_usage")(self.get_disk_usage)
+        self.app.route("/telem/is_recording")(self.get_is_recording)
         self.app.route("/control/start_recording")(self.start_recording)
         self.app.route("/control/stop_recording")(self.stop_recording)
         self.app.route("/control/update_snapshot")(self.update_snapshot)
@@ -23,11 +25,21 @@ class Dashboard:
     def index(self):
         return render_template("index.html", data=self)
 
+    def get_is_recording(self):
+        print("get is recording")
+        return str(self.process.poll() is None)
+
     def start_recording(self):
-        print("started streaming")
+        print("update snapshot")
+        if self.process.poll() is not None:
+            self.process = subprocess.Popen(['../recorder/build/recorder', config.RECORD_DIR])
+        return "ok"
 
     def stop_recording(self):
         print("stop streaming")
+        if self.process.poll() is None:
+            self.process.terminate()
+        return "ok"
 
     def get_event_snapshot(self):
         print("get event snapshot")
@@ -51,7 +63,7 @@ class Dashboard:
     def update_snapshot(self):
         print("update snapshot")
         if self.process.poll() is not None:
-            self.process = subprocess.Popen(['../recorder/build/main', '/tmp/', 'false'])
+            self.process = subprocess.Popen(['../recorder/build/snapshot'])
         return "ok"
 
 

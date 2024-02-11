@@ -21,24 +21,31 @@
 
     <p id="disk_usage"> </p>
     <script>
-    function updateBatteryVoltage() {
+    function updateDiskUsage() {
         fetch('/telem/disk_usage')
         .then(response => response.text())
         .then(data => {
             document.getElementById('disk_usage').innerText = `disk space remaining: ${data}GB`;
         })
     }
-    setInterval(updateBatteryVoltage, 1000);
+    setInterval(updateDiskUsage, 1000);
     </script>
 
     <h1>Stream control</h1>
-    <p>Currently recording: {{ data.is_recording }}</p>
+    <p id="is_recording"> </p>
+    <script>
+    function updateIsRecording() {
+        fetch('/telem/is_recording')
+        .then(response => response.text())
+        .then(data => {
+            document.getElementById('is_recording').innerText = `is recording: ${data}`;
+        })
+    }
+    setInterval(updateIsRecording, 1000);
+    </script>
 
-    {% if data.is_recording == False %}
     <button id="on_button" onclick="fetch('/control/start_recording')"> start </button>
-    {% elif data.is_recording == True %}
     <button id="off_button" onclick="fetch('/control/stop_recording')"> Stop </button>
-    {% endif %}
 
     <h1>Snapshot</h1>
     <button id="on_button" onclick="fetch('/control/update_snapshot')"> Update </button>

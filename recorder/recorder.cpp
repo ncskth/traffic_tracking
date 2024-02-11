@@ -55,7 +55,7 @@ void saver_thread(std::string output_dir) {
 
         //1 Hz update rate is sufficient, logging of raw events and camera video is done elsewhere
         using namespace std::chrono_literals;
-        std::this_thread::sleep_for(900ms);
+        std::this_thread::sleep_for(700ms);
         video_frame_available = false;
         std::this_thread::sleep_for(80ms);
         memset(event_frame, 0, sizeof(event_frame));
