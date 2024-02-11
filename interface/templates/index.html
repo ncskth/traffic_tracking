@@ -25,7 +25,7 @@
         fetch('/telem/disk_usage')
         .then(response => response.text())
         .then(data => {
-            document.getElementById('disk_usage').innerText = `disk space used: ${data}`;
+            document.getElementById('disk_usage').innerText = `disk space remaining: ${data}GB`;
         })
     }
     setInterval(updateBatteryVoltage, 1000);
@@ -41,7 +41,26 @@
     {% endif %}
 
     <h1>Snapshot</h1>
-    <img src="/telem/event_snapshot.jpg">
-    <img src="/telem/video_snapshot.jpg">
+    <button id="on_button" onclick="fetch('/control/update_snapshot')"> Update </button>
+    <br>
+    <img id="event_snapshot" src="/telem/event_snapshot.bmp" width="720">
+    <script>
+        function updateImage() {
+            var img = document.getElementById('event_snapshot');
+            var timestamp = new Date().getTime();
+            img.src = "/telem/event_snapshot.bmp?time=" + timestamp;
+        }
+        setInterval(updateImage, 500);
+    </script>
+
+    <img id="video_snapshot" src="/telem/video_snapshot.jpg" width="720">
+    <script>
+        function updateImage() {
+            var img = document.getElementById('video_snapshot');
+            var timestamp = new Date().getTime();
+            img.src = "/telem/video_snapshot.jpg?time=" + timestamp;
+        }
+        setInterval(updateImage, 500);
+    </script>
 </body>
 </html>
