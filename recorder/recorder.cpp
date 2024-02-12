@@ -21,7 +21,7 @@
 #include "stb_image_write.h"
 
 
-#define FRAME_WIDTH 720
+#define FRAME_WIDTH 640
 #define FRAME_HEIGHT 480
 
 std::string tmp_dir = TMP_DIR;
@@ -31,7 +31,7 @@ bool terminate_saver = false;
 bool terminate_camera = false;
 bool terminate = false;
 
-
+bool camera_initialized = false;
 uint32_t event_count;
 uint8_t event_frame[FRAME_WIDTH * FRAME_HEIGHT];
 bool video_frame_available = false;
@@ -85,7 +85,7 @@ void saver_thread(std::string output_dir) {
 static void on_identity_handoff(GstElement *identity, GstBuffer *buffer, GstPad *pad, gpointer user_data) {
     frame_count++;
     uint64_t frame_time = GST_BUFFER_PTS(buffer) / 1000; // nano to micro
-    uint64_t event_time = cam.get_last_timestamp(); // micro
+    uint64_t event_time = camera_initialized ? cam.get_last_timestamp() : 0; // micro
 
     std::unique_lock<std::mutex> lock(timestamps_mutex);
     timestamps.push_back({event_time, frame_time});
@@ -121,7 +121,7 @@ int gstreamer_thread(std::string output_dir) {
     sink = gst_element_factory_make("filesink", "sink");
 
     if (!source || !filter || !identity || !muxer || !sink) {
-        g_printerr("Not all elements could be created.\n");
+        std::cout << "Not all elements could be created." << std::endl;
         return -1;
     }
 
@@ -177,6 +177,7 @@ int event_camera_thread(std::string output_dir) {
     cam.start();
     cam.cd().add_callback(event_cb);
     cam.start_recording(events_output_path);
+    camera_initialized = true;
     while (true) {
         using namespace std::chrono_literals;
         std::this_thread::sleep_for(1000ms);
@@ -200,9 +201,9 @@ int main(int argc, char** argv) {
     std::filesystem::create_directory(output_dir);
 
     std::thread saver_t(saver_thread, output_dir);
-    std::thread event_camera_t(event_camera_thread, output_dir);
-    std::this_thread::sleep_for(5s); // give event camera time to get ready
     std::thread gstreamer_t(gstreamer_thread, output_dir);
+    std::this_thread::sleep_for(1s);
+    std::thread event_camera_t(event_camera_thread, output_dir);
 
     while (true) {
         std::this_thread::sleep_for(1000ms);

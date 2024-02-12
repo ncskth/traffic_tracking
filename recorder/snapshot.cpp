@@ -24,7 +24,7 @@ int main(void) {
     std::string snapshot_cmd = "ffmpeg -nostdin -y -f v4l2 -s 1920x1200 -i " VIDEO_CAMERA " -ss 0:0:1 -frames:v 1 -loglevel quiet " TMP_DIR VIDEO_SNAPSHOT_FILE_NAME;
     system(snapshot_cmd.c_str());
 
-    uint8_t frame[480 * 720] = {};
+    uint8_t frame[480 * 640] = {};
 
     Metavision::Camera cam;
     cam = Metavision::Camera::from_first_available();
@@ -32,10 +32,10 @@ int main(void) {
     cam.start();
     cam.cd().add_callback([&frame](const Metavision::EventCD *begin, const Metavision::EventCD *end) {
         for (const Metavision::EventCD *ev = begin; ev != end; ++ev) {
-            if (ev->x >= 720 || ev->y >= 480) {
+            if (ev->x >= 640 || ev->y >= 480) {
                 continue;
             }
-            frame[ev->x + ev->y * 720] = ev->p ? 255 : 128;
+            frame[ev->x + ev->y * 640] = ev->p ? 255 : 128;
         }
     });
     using namespace std::chrono_literals;
@@ -44,5 +44,5 @@ int main(void) {
     std::this_thread::sleep_for(8ms);
     cam.stop();
     std::this_thread::sleep_for(100ms);
-    stbi_write_bmp(TMP_DIR EVENT_SNAPSHOT_FILE_NAME, 720, 480, 1, frame);
+    stbi_write_bmp(TMP_DIR EVENT_SNAPSHOT_FILE_NAME, 640, 480, 1, frame);
 }
