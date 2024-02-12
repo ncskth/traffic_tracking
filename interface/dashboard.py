@@ -8,7 +8,7 @@ import config
 class Dashboard:
     def __init__(self):
         self.app = Flask(__name__)
-        self.process = subprocess.Popen(['ls'])
+        self.process = subprocess.Popen(['../recorder/build/snapshot'])
         self.register_routes()
 
     def register_routes(self):
