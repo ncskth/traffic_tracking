@@ -76,7 +76,7 @@ void saver_thread(std::string output_dir) {
         for (auto v : timestamps_copy) {
             timestamps_file << v.first << "," << v.second << "\n";
         }
-        std::cout << "handled " << timestamps_copy.size() << "frames " << "and " << event_count / 1000000 << "M events" << std::endl;
+        std::cout << "handled " << timestamps_copy.size() << "frames " << "and " << event_count / 1000000.0 << "M events" << std::endl;
         event_count = 0;
     }
 }

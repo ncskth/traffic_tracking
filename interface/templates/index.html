@@ -3,17 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Pangolin&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+
     <title>Traffic Recorder Dashboard</title>
 </head>
 <body>
-    <h1>Telemetry</h1>
+    <h1>Traffic Recorder Dashboard</h1>
+
     <p id="battery_voltage"> </p>
     <script>
     function updateBatteryVoltage() {
         fetch('/telem/battery_voltage')
         .then(response => response.text())
         .then(data => {
-            document.getElementById('battery_voltage').innerText = `battery voltage: ${data}`;
+            document.getElementById('battery_voltage').innerText = `Battery voltage: ${data}`;
         })
     }
     setInterval(updateBatteryVoltage, 1000);
@@ -25,32 +30,43 @@
         fetch('/telem/disk_usage')
         .then(response => response.text())
         .then(data => {
-            document.getElementById('disk_usage').innerText = `disk space remaining: ${data}GB`;
+            document.getElementById('disk_usage').innerText = `Disk space remaining: ${data}GB`;
         })
     }
     setInterval(updateDiskUsage, 1000);
     </script>
 
-    <h1>Stream control</h1>
+    <h2>Recorder</h2>
     <p id="is_recording"> </p>
     <script>
     function updateIsRecording() {
         fetch('/telem/is_recording')
         .then(response => response.text())
         .then(data => {
-            document.getElementById('is_recording').innerText = `is recording: ${data}`;
+            const button = document.getElementById('is_recording');
+            const isRecording = data.trim().toLowerCase() === "true"; // Convert string to boolean
+            if (isRecording) {
+                button.innerText = "On"
+                button.style.color = "green"; // Text color for better readability
+            } else {
+                button.innerText = "Off"
+                button.style.color = "red"; // Text color for better readability
+            }
         })
     }
     setInterval(updateIsRecording, 1000);
     </script>
 
-    <button id="on_button" onclick="fetch('/control/start_recording')"> start </button>
+    <button id="on_button" onclick="fetch('/control/start_recording')"> Start </button>
     <button id="off_button" onclick="fetch('/control/stop_recording')"> Stop </button>
-
-    <h1>Snapshot</h1>
+    <br>
+    <br>
+    <br>
+    <h2>Snapshot</h2>
     <button id="on_button" onclick="fetch('/control/update_snapshot')"> Update </button>
     <br>
-    <img id="event_snapshot" src="/telem/event_snapshot.bmp" width="720">
+    <br>
+    <img id="event_snapshot" class="snapshot" src="/telem/event_snapshot.bmp" width="640">
     <script>
         function updateImage() {
             var img = document.getElementById('event_snapshot');
@@ -59,8 +75,8 @@
         }
         setInterval(updateImage, 500);
     </script>
-
-    <img id="video_snapshot" src="/telem/video_snapshot.jpg" width="720">
+    <br>
+    <img id="video_snapshot" class="snapshot" src="/telem/video_snapshot.jpg" >
     <script>
         function updateImage() {
             var img = document.getElementById('video_snapshot');
