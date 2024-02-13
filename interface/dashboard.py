@@ -9,6 +9,7 @@ class Dashboard:
     def __init__(self):
         self.app = Flask(__name__)
         self.process = subprocess.Popen(['../recorder/build/snapshot'])
+        self.recording = False
         self.register_routes()
 
     def register_routes(self):
@@ -27,17 +28,19 @@ class Dashboard:
 
     def get_is_recording(self):
         print("get is recording")
-        return str(self.process.poll() is None)
+        return str(self.process.poll() is None and self.recording)
 
     def start_recording(self):
         print("update snapshot")
         if self.process.poll() is not None:
             self.process = subprocess.Popen(['../recorder/build/recorder', config.RECORD_DIR])
+            self.recording = True
         return "ok"
 
     def stop_recording(self):
         print("stop streaming")
         if self.process.poll() is None:
+            self.recording = False
             self.process.terminate()
         return "ok"
 
