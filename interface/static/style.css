@@ -7,13 +7,6 @@ body {
     background-repeat: repeat;
 }
 
-@media (orientation: landscape) {
-    body {
-        margin-left: 30%;
-    }
-}
-
-/* Base button styling */
 button {
     padding: 20px 20px;
     cursor: pointer;
@@ -32,12 +25,31 @@ button:hover {
 
 @media (orientation: portrait) {
     .snapshot {
-        width: 80%
+        width: 80%;
+    }
+
+    .logo {
+        width: 35%
     }
 }
 
 @media (orientation: landscape) {
     .snapshot {
-        width: 60%
+        width: 60%;
     }
+
+    .logo {
+        width: 15%
+    }
+
+    body {
+        margin-left: 30%;
+    }
+}
+
+
+.inline-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }

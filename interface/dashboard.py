@@ -43,11 +43,17 @@ class Dashboard:
 
     def get_event_snapshot(self):
         print("get event snapshot")
-        return send_file(config.TMP_DIR + config.EVENT_SNAPSHOT_FILE_NAME)
+        try:
+            return send_file(config.TMP_DIR + config.EVENT_SNAPSHOT_FILE_NAME)
+        except:
+            return send_file("img/dog.jpg")
 
     def get_video_snapshot(self):
         print("get video snapshot")
-        return send_file(config.TMP_DIR + config.VIDEO_SNAPSHOT_FILE_NAME)
+        try:
+            return send_file(config.TMP_DIR + config.VIDEO_SNAPSHOT_FILE_NAME)
+        except:
+            return send_file("img/dog.jpg")
 
     def get_battery_voltage(self):
         print("get battery voltage")
