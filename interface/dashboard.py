@@ -68,7 +68,7 @@ class Dashboard:
 
 
     def run(self):
-        self.app.run(host="0.0.0.0", port=8080, debug=True)
+        self.app.run(host="0.0.0.0", port=config.PORT, debug=config.DEBUG)
 
 if __name__ == "__main__":
     dashboard = Dashboard()
