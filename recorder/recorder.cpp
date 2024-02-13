@@ -14,6 +14,7 @@
 #include <mutex>
 #include <thread>
 #include <filesystem>
+#include <csignal>
 
 #include "config.h"
 
@@ -29,7 +30,7 @@ std::string tmp_dir = TMP_DIR;
 
 bool terminate_saver = false;
 bool terminate_camera = false;
-bool terminate = false;
+bool terminate = true;
 
 bool camera_initialized = false;
 uint32_t event_count;
@@ -41,6 +42,7 @@ std::vector<std::pair<uint64_t, uint64_t>> timestamps;
 std::mutex timestamps_mutex;
 
 Metavision::Camera cam;
+GMainLoop *loop;
 
 uint16_t frame_count = 0;
 
@@ -78,6 +80,10 @@ void saver_thread(std::string output_dir) {
         }
         std::cout << "handled " << timestamps_copy.size() << "frames " << "and " << event_count / 1000000.0 << "M events" << std::endl;
         event_count = 0;
+
+        if (terminate_saver && timestamps_copy.size() == 0) {
+            return;
+        }
     }
 }
 
@@ -108,7 +114,6 @@ static void on_identity_handoff(GstElement *identity, GstBuffer *buffer, GstPad 
 
 int gstreamer_thread(const std::string &output_dir) {
     GstElement *pipeline, *source, *filter, *identity, *muxer, *sink;
-    GMainLoop *loop;
     GstCaps *caps;
 
     gst_init(NULL, NULL);
@@ -181,7 +186,20 @@ int event_camera_thread(std::string output_dir) {
     while (true) {
         using namespace std::chrono_literals;
         std::this_thread::sleep_for(1000ms);
+        if (terminate_camera) {
+            g_main_loop_quit(loop);
+            std::this_thread::sleep_for(2s);
+            terminate_saver = true;
+            std::this_thread::sleep_for(2s);
+            cam.stop();
+            exit(0);
+        }
     }
+}
+
+void signal_handler(int signum) {
+    terminate_camera = true;
+    terminate = true;
 }
 
 int main(int argc, char** argv) {
@@ -190,6 +208,8 @@ int main(int argc, char** argv) {
         printf("Provide an output directory\n");
         return -1;
     }
+    signal(SIGINT, signal_handler);
+
     std::string output_dir;
     std::ostringstream oss;
     auto t = std::time(nullptr);
