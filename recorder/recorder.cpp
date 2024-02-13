@@ -122,7 +122,7 @@ int gstreamer_thread(const std::string &output_dir) {
     source = gst_element_factory_make("v4l2src", "source");
     filter = gst_element_factory_make("capsfilter", "filter");
     identity = gst_element_factory_make("identity", "identity");
-    muxer = gst_element_factory_make("matroskamux", "muxer");  // Changed to matroskamux for MKV format
+    muxer = gst_element_factory_make("avimux", "muxer");  // Changed to matroskamux for MKV format
     sink = gst_element_factory_make("filesink", "sink");
 
     if (!source || !filter || !identity || !muxer || !sink) {
@@ -131,7 +131,7 @@ int gstreamer_thread(const std::string &output_dir) {
     }
 
     g_object_set(G_OBJECT(source), "device", VIDEO_CAMERA, NULL);
-    g_object_set(G_OBJECT(sink), "location", (output_dir + "/video.mkv").c_str(), NULL);  // Changed file extension to .mkv
+    g_object_set(G_OBJECT(sink), "location", (output_dir + "/video.avi").c_str(), NULL);  // Changed file extension to .mkv
 
     // Set the caps for the filter
     caps = gst_caps_new_simple("image/jpeg",
