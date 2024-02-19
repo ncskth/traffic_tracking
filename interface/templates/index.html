@@ -11,6 +11,24 @@
 </head>
 <body>
     <h1>Traffic Recorder Dashboard</h1>
+    <h1 id="error"></h1>
+    <script>
+    function updateError() {
+        fetch('/telem/has_error')
+        .then(response => response.text())
+        .then(data => {
+            const dom = document.getElementById('error');
+            const error = data.trim().toLowerCase() === "true"; // Convert string to boolean
+            if (error) {
+                dom.innerText = "ERROR IN RECORDING PROCESS"
+                dom.style.color = "red"; // Text color for better readability
+            } else {
+                dom.innerText = ""
+            }
+        })
+    }
+    setInterval(updateError, 1000);
+    </script>
 
     <p id="battery_voltage"> </p>
     <script>
@@ -19,7 +37,25 @@
         .then(response => response.text())
         .then(data => {
             volt = document.getElementById('battery_voltage')
-            volt.innerText = `Battery voltage: ${data}V`;
+            volt.innerText = `First battery voltage: ${data}V`;
+            if (Number(data) <= 6.5) {
+                volt.style.color = "red"
+            } else {
+                volt.style.color = "black"
+            }
+        })
+    }
+    setInterval(updateBatteryVoltage, 1000);
+    </script>
+
+    <p id="battery_voltage2"> </p>
+    <script>
+    function updateBatteryVoltage() {
+        fetch('/telem/battery_voltage2')
+        .then(response => response.text())
+        .then(data => {
+            volt = document.getElementById('battery_voltage2')
+            volt.innerText = `Second battery voltage: ${data}V`;
             if (Number(data) <= 6.5) {
                 volt.style.color = "red"
             } else {
