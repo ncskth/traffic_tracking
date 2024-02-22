@@ -13,8 +13,8 @@ class Dashboard:
         self.app = Flask(__name__)
         self.process = subprocess.Popen(['../recorder/build/snapshot'])
         self.recording = False
-        self.volt1 = 0
-        self.volt2 = 0
+        self.volt1 = 1
+        self.volt2 = 2
 
 
         self.register_routes()
@@ -41,7 +41,6 @@ class Dashboard:
                     break
             buf.strip()
             args = buf.split(b" ")
-            print(args)
             if args[0] == b"adc1":
                 self.volt1 = float(args[1]);
 
@@ -54,7 +53,7 @@ class Dashboard:
         ping = False
         while True:
             if ping:
-                if self.recording and self.process is not None:
+                if self.recording and self.process.poll() is not None:
                     self.ser.write(b"rgb 255 0 0\n")
                 elif self.recording:
                     self.ser.write(b"rgb 0 255 255\n")
@@ -137,7 +136,7 @@ class Dashboard:
 
     def get_error(self):
         print("get error")
-        return str(self.recording and self.process is not None)
+        return str(self.recording and self.process.poll() is not None)
 
     def run(self):
         self.app.run(host="0.0.0.0", port=config.PORT, debug=config.DEBUG)
