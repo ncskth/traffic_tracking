@@ -30,40 +30,58 @@
     setInterval(updateError, 1000);
     </script>
 
-    <p id="battery_voltage"> </p>
+    <p id="battery1_voltage"> </p>
     <script>
-    function updateBatteryVoltage() {
-        fetch('/telem/battery_voltage')
+    function updateBattery1Voltage() {
+        fetch('/telem/battery1_voltage')
         .then(response => response.text())
         .then(data => {
-            volt = document.getElementById('battery_voltage')
+            volt = document.getElementById('battery1_voltage')
             volt.innerText = `First battery voltage: ${data}V`;
-            if (Number(data) <= 6.5) {
+            if (Number(data) <= {{ config.LOW_CELL_WARN }}) {
                 volt.style.color = "red"
             } else {
                 volt.style.color = "black"
             }
         })
     }
-    setInterval(updateBatteryVoltage, 1000);
+    setInterval(updateBattery1Voltage, 1000);
     </script>
 
-    <p id="battery_voltage2"> </p>
+    <p id="battery2_voltage"> </p>
     <script>
-    function updateBatteryVoltage() {
-        fetch('/telem/battery_voltage2')
+    function updateBattery2Voltage() {
+        fetch('/telem/battery2_voltage')
         .then(response => response.text())
         .then(data => {
-            volt = document.getElementById('battery_voltage2')
+            volt = document.getElementById('battery2_voltage')
             volt.innerText = `Second battery voltage: ${data}V`;
-            if (Number(data) <= 6.5) {
+            if (Number(data) <= {{ config.LOW_CELL_WARN }}) {
                 volt.style.color = "red"
             } else {
                 volt.style.color = "black"
             }
         })
     }
-    setInterval(updateBatteryVoltage, 1000);
+    setInterval(updateBattery2Voltage, 1000);
+    </script>
+
+    <p id="total_voltage"> </p>
+    <script>
+    function updateTotalVoltage() {
+        fetch('/telem/total_voltage')
+        .then(response => response.text())
+        .then(data => {
+            volt = document.getElementById('total_voltage')
+            volt.innerText = `Total battery voltage: ${data}V`;
+            if (Number(data) <= {{ config.LOW_TOTAL_WARN }}) {
+                volt.style.color = "red"
+            } else {
+                volt.style.color = "black"
+            }
+        })
+    }
+    setInterval(updateTotalVoltage, 1000);
     </script>
 
     <p id="disk_usage"> </p>
