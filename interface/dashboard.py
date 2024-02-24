@@ -118,15 +118,15 @@ class Dashboard:
 
     def get_battery1_voltage(self):
         print("get battery1 voltage")
-        return f"{self.volt1 - self.volt2:.2f}"
+        return f"{self.volt2 - self.volt1:.2f}"
 
     def get_battery2_voltage(self):
         print("get battery2 voltage")
-        return f"{self.volt2:.2f}"
+        return f"{self.volt1:.2f}"
 
     def get_total_voltage(self):
         print("get total voltage")
-        return f"{self.volt1:.2f}"
+        return f"{self.volt2:.2f}"
 
     def get_disk_usage(self):
         print("get disk usage")
