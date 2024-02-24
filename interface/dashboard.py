@@ -15,8 +15,7 @@ class Dashboard:
         self.recording = False
         self.volt1 = 3
         self.volt2 = 1
-
-
+        self.git_hash = subprocess.check_output(['git', 'rev-parse', '--short', 'HEAD']).decode('ascii').strip()
         self.register_routes()
         try:
             self.ser = serial.Serial(
@@ -82,7 +81,7 @@ class Dashboard:
         self.app.route("/control/update_snapshot")(self.update_snapshot)
 
     def index(self):
-        return render_template("index.html", config=config)
+        return render_template("index.html", config=config, version=self.git_hash)
 
     def get_is_recording(self):
         print("get is recording")
