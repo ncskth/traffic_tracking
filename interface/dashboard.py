@@ -13,22 +13,23 @@ class Dashboard:
         self.app = Flask(__name__)
         self.process = subprocess.Popen(['../recorder/build/snapshot'])
         self.recording = False
-        self.volt1 = 1
-        self.volt2 = 2
+        self.volt1 = 3
+        self.volt2 = 1
 
 
         self.register_routes()
+        try:
+            self.ser = serial.Serial(
+                port=config.SERIAL_PORT,
+                baudrate=115200
+            )
+            serial_reader_t = threading.Thread(target=self.serial_reader_thread)
+            monitor_t = threading.Thread(target=self.monitor_thread)
+            serial_reader_t.start()
+            monitor_t.start()
+        except:
+            print("Couldn't open serial")
 
-        self.ser = serial.Serial(
-            port=config.SERIAL_PORT,
-            baudrate=115200
-        )
-
-        serial_reader_t = threading.Thread(target=self.serial_reader_thread)
-        monitor_t = threading.Thread(target=self.monitor_thread)
-
-        serial_reader_t.start()
-        monitor_t.start()
 
     def serial_reader_thread(self):
         buf = bytes()
@@ -42,10 +43,10 @@ class Dashboard:
             buf.strip()
             args = buf.split(b" ")
             if args[0] == b"adc1":
-                self.volt1 = float(args[1]);
+                self.volt1 = float(args[1]) * config.VOLT1_GAIN
 
             if args[0] == b"adc2":
-                self.volt2 = float(args[1]);
+                self.volt2 = float(args[1]) * config.VOLT2_GAIN
 
             time.sleep(0.1)
 
@@ -70,8 +71,9 @@ class Dashboard:
         self.app.route("/")(self.index)
         self.app.route("/telem/event_snapshot.bmp")(self.get_event_snapshot)
         self.app.route("/telem/video_snapshot.jpg")(self.get_video_snapshot)
-        self.app.route("/telem/battery_voltage")(self.get_battery_voltage)
-        self.app.route("/telem/battery_voltage2")(self.get_battery_voltage2)
+        self.app.route("/telem/total_voltage")(self.get_total_voltage)
+        self.app.route("/telem/battery1_voltage")(self.get_battery1_voltage)
+        self.app.route("/telem/battery2_voltage")(self.get_battery2_voltage)
         self.app.route("/telem/disk_usage")(self.get_disk_usage)
         self.app.route("/telem/is_recording")(self.get_is_recording)
         self.app.route("/telem/has_error")(self.get_error)
@@ -80,7 +82,7 @@ class Dashboard:
         self.app.route("/control/update_snapshot")(self.update_snapshot)
 
     def index(self):
-        return render_template("index.html", data=self)
+        return render_template("index.html", config=config)
 
     def get_is_recording(self):
         print("get is recording")
@@ -114,13 +116,17 @@ class Dashboard:
         except:
             return send_file("img/dog.jpg")
 
-    def get_battery_voltage(self):
-        print("get battery voltage")
-        return f"{self.volt1:.2f}"
+    def get_battery1_voltage(self):
+        print("get battery1 voltage")
+        return f"{self.volt1 - self.volt2:.2f}"
 
-    def get_battery_voltage2(self):
-        print("get battery voltage2")
+    def get_battery2_voltage(self):
+        print("get battery2 voltage")
         return f"{self.volt2:.2f}"
+
+    def get_total_voltage(self):
+        print("get total voltage")
+        return f"{self.volt1:.2f}"
 
     def get_disk_usage(self):
         print("get disk usage")
