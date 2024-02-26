@@ -11,4 +11,4 @@ LOW_CELL_WARN = 3.5
 LOW_CELL_POWER_OFF = 3.2
 LOW_TOTAL_WARN = 7
 LOW_TOTAL_POWER_OFF = 6.6
-VERSION="1.2 (low volt shutdown)"
+VERSION="1.3 (manual shutdown)"

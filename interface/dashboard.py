@@ -88,9 +88,13 @@ class Dashboard:
         self.app.route("/control/start_recording")(self.start_recording)
         self.app.route("/control/stop_recording")(self.stop_recording)
         self.app.route("/control/update_snapshot")(self.update_snapshot)
+        self.app.route("/control/shutdown")(self.shutdown)
 
     def index(self):
         return render_template("index.html", config=config, version=config.VERSION)
+
+    def shutdown(self):
+        subprocess.Popen(['shutdown', 'now'])
 
     def get_is_recording(self):
         print("get is recording")

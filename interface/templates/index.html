@@ -155,10 +155,34 @@
     <br>
     <br>
     <br>
+    <button id="shutdown">shutdown (hold)</button>
+
+    <script>
+        // JavaScript to make the button work
+        const shutdown_button = document.getElementById('shutdown'); // Get the button element
+        let shutdown_timer; // Define a variable for the timer
+
+        shutdown_button.addEventListener('mousedown', function() {
+            shutdown_timer = setTimeout(function() {
+                fetch('/control/shutdown')
+                shutdown_button.innerText = "shutting down"
+            }, 3000);
+        });
+
+        shutdown_button.addEventListener('mouseup', function() {
+            clearTimeout(shutdown_timer);
+        });
+
+        shutdown_button.addEventListener('mouseleave', function() {
+            clearTimeout(shutdown_timer);
+        });
+    </script>
+    <br>
+    <br>
+    <br>
+    <br>
     <img src="/static/kth.jpg" class="logo">
     <p style="font-size: 20px;">Made at KTH, NCS lab, 2024</p>
-    <br>
-    <br>
     <br>
     <p style="font-size: 20px;">version: {{version}}</p>
 
