@@ -13,8 +13,8 @@ class Dashboard:
         self.app = Flask(__name__)
         self.process = subprocess.Popen(['../recorder/build/snapshot'])
         self.recording = False
-        self.volt1 = 3
-        self.volt2 = 1
+        self.volt1 = 0
+        self.volt2 = 0
         # self.git_hash = subprocess.check_output(['git', 'rev-parse', '--short', 'HEAD']).decode('ascii').strip()
         self.register_routes()
         try:
@@ -51,6 +51,7 @@ class Dashboard:
 
     def monitor_thread(self):
         ping = False
+        low_for = 0
         while True:
             if ping:
                 if self.recording and self.process.poll() is not None:
@@ -64,6 +65,14 @@ class Dashboard:
                 self.ser.write(b"rgb 0 0 0\n")
                 ping = True
 
+            if self.volt2 > 2 and self.volt2 < config.LOW_TOTAL_POWER_OFF:
+                low_for += 1
+            else:
+                low_for = 0
+
+            if low_for >= 5:
+                print("shutting down due to low voltage")
+                subprocess.Popen(['shutdown', 'now'])
             time.sleep(1)
 
     def register_routes(self):
