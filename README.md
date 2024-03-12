@@ -1,4 +1,4 @@
-This repository contains various programs to help record two cameras simultaneouslym one event based and one normal.
+This repository contains various programs to help create an EVS dataset
 
 See the readmes for each subproject
 
