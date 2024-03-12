@@ -1,5 +1,5 @@
 ### esp32 helper board
-This program makes the esp32 output voltages and enables control of the LED over serial. It is running at 115200 baud with the standard bit configuration.
+This program makes the esp32 output voltages and enables control of the LED over serial. It is running at 115200 baud with the standard bit configuration. It uses ESP-IDF with platformio.
 
 Voltages are outputted as
 ```
@@ -15,10 +15,13 @@ to control the led send
 
 
 #### building
-The project is build using platformio. I recommend installing into a virtual environment with pip (see the interface documentation).
+The project is built using platformio. I recommend installing it into a virtual environment with pip (see the interface readme).
 
 `pip install platformio`
 
+
+Then uploading should be as simple as
+
 `pio run -t upload`
 
-and it should be done
+Platformio automatically finds the right port and enters the bootloader.
