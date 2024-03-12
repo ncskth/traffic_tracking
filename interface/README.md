@@ -3,7 +3,7 @@ The interface runs using Python and Flask, a small web framework. It makes it po
 
 To update or change the web page you need to edit `templates/index.hmtl` to your liking. If the change is purely cosmetic then that's probably enough but for anything more you will also need to edit `dashboard.py`. There you can set how and when different python functions are called. Usually you write your function and then register it to a specific endpoint using `register_routes`.
 
-Most relevant things such as ports and paths can be configured in `config.py`
+Most relevant things such as ports and paths can be configured in `config.py`. Make sure to check `config.h` in `../recorder/` as well
 
 ### running
 I recommend setting up a virtual environment
@@ -22,4 +22,4 @@ pip install -r requirements.txt
 Running the dashboard is just `python dashboard.py`
 
 ### Starting at boot
-There is a systemd service file in the root of this repository. Copy it to `/usr/lib/systemd/system` and the run `systemctl enable traffic_dashboard` to make systemd start and restart it.
+There is a systemd service file in the root of this repository. Copy it to `/usr/lib/systemd/system/` and then run `systemctl enable traffic_dashboard` to make systemd manage it automatically.
